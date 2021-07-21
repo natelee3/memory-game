@@ -1,6 +1,8 @@
 import React from 'react';
 import MemoryCard from './components/MemoryCard';
 import './App.css';
+import Timer from './components/Timer';
+
 
 function generateDeck() {
   const symbols = ['🍇', '🍔', '🍕', '🌮', '🍱', '🍪', '🍺', '🥐'];
@@ -32,8 +34,16 @@ class App extends React.Component {
     super(props);
     this.state = {
       deck: generateDeck(),
-      pickedCards: []
+      pickedCards: [],
+      hits: 0
     };
+  }
+
+  checkWin() {
+    if (this.state.hits > 7) {
+      return true;
+    }
+    return false;
   }
 
   pickCard(cardIndex) {
@@ -55,6 +65,10 @@ class App extends React.Component {
           let card2Index = newPickedCards[1];
           if (newDeck[card1Index].symbol !== newDeck[card2Index].symbol) {
             setTimeout(this.unflipCards.bind(this, card1Index, card2Index),1000)
+          } else {
+            this.setState({
+              hits: this.state.hits + 1
+            })
           }
           newPickedCards = [];
         }
@@ -77,6 +91,7 @@ class App extends React.Component {
         return card2;
       }
       return card;
+      
     });
     this.setState({
       deck: newDeck
@@ -93,12 +108,17 @@ class App extends React.Component {
                 pickCard={this.pickCard.bind(this, index)} 
                 />
     });
+    let displayTimer = (this.checkWin() === true) ? <h2>You WIN!!</h2> : <Timer />
+
     return (
       <div className="App">
         <header className="App-header">
           <h1 className="title">Memory Game</h1>
           <h4 className="subtitle">Match Cards to Win</h4>
         </header>
+        <div>
+          {displayTimer}
+        </div>
         <div>
           {cardsJSX.slice(0,4)}
         </div>
